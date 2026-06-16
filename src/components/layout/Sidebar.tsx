@@ -87,6 +87,14 @@ const navItems: Record<string, NavItem[]> = {
     { href: "/user/hisobotlar",         label: "Hisobotlar",       icon: <IconChart /> },
     { href: "/xarita",                  label: "Xarita",           icon: <IconMap /> },
   ],
+  DEV: [
+    { href: "/dev",          label: "Dashboard",   icon: <IconDash />, exact: true },
+    { href: "/dev/userlar",  label: "Userlar",     icon: <IconPeople /> },
+  ],
+  dev: [
+    { href: "/dev",          label: "Dashboard",   icon: <IconDash />, exact: true },
+    { href: "/dev/userlar",  label: "Userlar",     icon: <IconPeople /> },
+  ],
 };
 
 const roleConfig: Record<string, { label: string; color: string; dot: string }> = {
@@ -106,6 +114,8 @@ const roleConfig: Record<string, { label: string; color: string; dot: string }> 
   tadbirkor:    { label: "Tadbirkor",     color: "#f59e0b", dot: "#f59e0b" },
   user:         { label: "Foydalanuvchi", color: "#f59e0b", dot: "#f59e0b" },
   USER:         { label: "Foydalanuvchi", color: "#f59e0b", dot: "#f59e0b" },
+  DEV:          { label: "Dev",           color: "#06b6d4", dot: "#06b6d4" },
+  dev:          { label: "Dev",           color: "#06b6d4", dot: "#06b6d4" },
 };
 
 export default function Sidebar() {

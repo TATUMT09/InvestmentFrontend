@@ -1,4 +1,4 @@
-export type Role = "superadmin" | "SUPERADMIN" | "admin" | "ADMIN" | "tashkilot" | "TASHKILOT" | "user" | "USER" | "QURILISH" | "qurilish" | "HOKIM" | "hokim" | "INVESTITSIYA" | "investitsiya" | "TADBIRKOR" | "tadbirkor";
+export type Role = "superadmin" | "SUPERADMIN" | "admin" | "ADMIN" | "tashkilot" | "TASHKILOT" | "user" | "USER" | "QURILISH" | "qurilish" | "HOKIM" | "hokim" | "INVESTITSIYA" | "investitsiya" | "TADBIRKOR" | "tadbirkor" | "DEV" | "dev";
 
 export interface User {
   id: string;
