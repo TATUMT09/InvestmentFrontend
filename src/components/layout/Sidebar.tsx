@@ -31,7 +31,6 @@ const navItems: Record<string, NavItem[]> = {
     { href: "/investitsiya/muammolar",       label: "Muammolar",       icon: <IconAlert /> },
     { href: "/investitsiya/yangiliklar",     label: "Yangiliklar",     icon: <IconBell /> },
     { href: "/investitsiya/hujjatlar",       label: "Hujjatlar",       icon: <IconFolder /> },
-    { href: "/superadmin/userlar",           label: "Foydalanuvchilar",icon: <IconPeople /> },
     { href: "/superadmin/hisobotlar",        label: "Hisobotlar",      icon: <IconChart /> },
   ],
   INVESTITSIYA: [
