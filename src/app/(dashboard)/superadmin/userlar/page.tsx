@@ -107,9 +107,8 @@ export default function HokimUserlarPage() {
         const created = await createUser(cleanDto(form));
         setItems(p => [created, ...p]);
       } else if (editing) {
-        const base = { ...form, active: editing.active };
-        if (!form.password.trim()) base.password = "";
-        const updated = await updateUser(editing.id, cleanDto(base));
+        const pwd = form.password.trim() ? form.password : "";
+        const updated = await updateUser(editing.id, { ...cleanDto({ ...form, password: pwd }), active: editing.active });
         setItems(p => p.map(u => u.id === updated.id ? updated : u));
       }
       closeModal();

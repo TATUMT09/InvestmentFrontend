@@ -98,7 +98,7 @@ export default function InvestFoydalanuvchilarPage() {
     if (form.role === "TASHKILOT" && !form.organizationType) { setErr("Tashkilot turi tanlanishi shart"); return; }
     setSaving(true); setErr("");
     try {
-      const clean = (dto: UserCreateDto & { active?: boolean }) => ({
+      const clean = (dto: UserCreateDto) => ({
         ...dto,
         department: dto.department?.trim() || undefined,
         organizationType: dto.organizationType?.trim() || undefined,
@@ -107,9 +107,8 @@ export default function InvestFoydalanuvchilarPage() {
         const created = await createUser(clean(form));
         setItems(prev => [created, ...prev]);
       } else if (editing) {
-        const base = { ...form, active: editing.active };
-        if (!form.password.trim()) base.password = "";
-        const updated = await updateUser(editing.id, clean(base));
+        const pwd = form.password.trim() ? form.password : "";
+        const updated = await updateUser(editing.id, { ...clean({ ...form, password: pwd }), active: editing.active });
         setItems(prev => prev.map(u => u.id === updated.id ? updated : u));
       }
       closeModal();
