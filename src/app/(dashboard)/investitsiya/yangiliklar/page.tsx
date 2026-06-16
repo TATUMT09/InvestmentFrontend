@@ -14,12 +14,20 @@ const STATUS_CFG: Record<string, { label: string; color: string; emoji: string }
 };
 const scfg = (s: string) => STATUS_CFG[s] ?? { label: s, color: "#64748b", emoji: "📋" };
 
+interface ProjectGroup {
+  projectId: number;
+  projectName: string;
+  updates: ProjectUpdate[];
+  lastUpdate: ProjectUpdate;
+}
+
 export default function YangiliklarPage() {
-  const [updates,  setUpdates]  = useState<ProjectUpdate[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [tab,      setTab]      = useState("barchasi");
-  const [search,   setSearch]   = useState("");
-  const [modalImg, setModalImg] = useState<string | null>(null);
+  const [updates,    setUpdates]    = useState<ProjectUpdate[]>([]);
+  const [loading,    setLoading]    = useState(true);
+  const [search,     setSearch]     = useState("");
+  const [tab,        setTab]        = useState("barchasi");
+  const [openId,     setOpenId]     = useState<number | null>(null);
+  const [modalImg,   setModalImg]   = useState<string | null>(null);
 
   useEffect(() => {
     getAllUpdates()
@@ -29,26 +37,44 @@ export default function YangiliklarPage() {
   }, []);
 
   const TABS = [
-    { key:"barchasi",         label:"Barchasi" },
-    { key:"JARAYONDA",        label:"Jarayonda" },
-    { key:"KECHIKKAN",        label:"Kechikkan" },
-    { key:"MUAMMOLI",         label:"Muammoli" },
-    { key:"TUGALLANGAN",      label:"Tugallangan" },
+    { key:"barchasi",    label:"Barchasi" },
+    { key:"JARAYONDA",   label:"Jarayonda" },
+    { key:"KECHIKKAN",   label:"Kechikkan" },
+    { key:"MUAMMOLI",    label:"Muammoli" },
+    { key:"TUGALLANGAN", label:"Tugallangan" },
   ];
 
   const counts: Record<string, number> = { barchasi: updates.length };
   updates.forEach(u => { counts[u.status] = (counts[u.status] || 0) + 1; });
 
-  const filtered = useMemo(() => updates.filter(u => {
-    const matchTab = tab === "barchasi" || u.status === tab;
-    const q = search.toLowerCase();
-    const matchSearch = !q ||
-      u.title.toLowerCase().includes(q) ||
-      (u.description       ?? "").toLowerCase().includes(q) ||
-      (u.projectName       ?? "").toLowerCase().includes(q) ||
-      (u.createdByFullName ?? "").toLowerCase().includes(q);
-    return matchTab && matchSearch;
-  }), [updates, tab, search]);
+  const groups = useMemo<ProjectGroup[]>(() => {
+    const map = new Map<number, ProjectGroup>();
+    updates.forEach(u => {
+      const existing = map.get(u.projectId);
+      if (!existing) {
+        map.set(u.projectId, { projectId: u.projectId, projectName: u.projectName ?? `#${u.projectId}`, updates: [u], lastUpdate: u });
+      } else {
+        existing.updates.push(u);
+        if (new Date(u.createdAt) > new Date(existing.lastUpdate.createdAt)) {
+          existing.lastUpdate = u;
+        }
+      }
+    });
+    return Array.from(map.values());
+  }, [updates]);
+
+  const filteredGroups = useMemo(() => {
+    return groups.filter(g => {
+      const q = search.toLowerCase();
+      const matchSearch = !q || g.projectName.toLowerCase().includes(q) ||
+        g.updates.some(u => u.title.toLowerCase().includes(q) || (u.description ?? "").toLowerCase().includes(q));
+      const matchTab = tab === "barchasi" || g.updates.some(u => u.status === tab);
+      return matchSearch && matchTab;
+    }).map(g => ({
+      ...g,
+      updates: tab === "barchasi" ? g.updates : g.updates.filter(u => u.status === tab),
+    }));
+  }, [groups, tab, search]);
 
   return (
     <div className="space-y-5">
@@ -65,11 +91,11 @@ export default function YangiliklarPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { label:"Jami",            val: updates.length,                       color:"#60a5fa" },
-          { label:"Jarayonda",       val: counts["JARAYONDA"]        || 0,      color:"#f59e0b" },
-          { label:"Kechikkan",       val: counts["KECHIKKAN"]        || 0,      color:"#f97316" },
-          { label:"Muammoli",        val: counts["MUAMMOLI"]         || 0,      color:"#ef4444" },
-          { label:"Tugallangan",     val: counts["TUGALLANGAN"]      || 0,      color:"#10b981" },
+          { label:"Jami",        val: updates.length,               color:"#60a5fa" },
+          { label:"Jarayonda",   val: counts["JARAYONDA"]   || 0,   color:"#f59e0b" },
+          { label:"Kechikkan",   val: counts["KECHIKKAN"]   || 0,   color:"#f97316" },
+          { label:"Muammoli",    val: counts["MUAMMOLI"]    || 0,   color:"#ef4444" },
+          { label:"Tugallangan", val: counts["TUGALLANGAN"] || 0,   color:"#10b981" },
         ].map(s => (
           <div key={s.label} className="p-3 rounded-2xl text-center"
             style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)" }}>
@@ -88,7 +114,7 @@ export default function YangiliklarPage() {
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Loyiha, sarlavha, yuboruvchi..."
+            placeholder="Loyiha yoki sarlavha..."
             className="w-full text-sm pl-9 pr-4 py-2.5 rounded-xl outline-none"
             style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", color:"rgba(200,220,255,0.85)" }}
             onFocus={e => { e.target.style.borderColor="rgba(59,130,246,0.35)"; }}
@@ -115,20 +141,14 @@ export default function YangiliklarPage() {
         </div>
       </div>
 
-      {/* Table header */}
-      <div className="hidden md:grid grid-cols-[1.5fr_2fr_1.2fr_1fr_1fr_80px] gap-3 px-4 text-[11px] font-semibold uppercase tracking-wide"
-        style={{ color:"rgba(100,130,200,0.4)" }}>
-        <span>Loyiha</span><span>Sarlavha</span><span>Yuboruvchi</span><span>Holat</span><span>Sana</span><span>Rasm</span>
-      </div>
-
-      {/* List */}
+      {/* Groups */}
       {loading ? (
         <div className="py-16 text-center rounded-2xl"
           style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)" }}>
           <div className="text-4xl mb-3 animate-pulse">📋</div>
           <p className="text-sm" style={{ color:"rgba(100,130,200,0.45)" }}>Yuklanmoqda...</p>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : filteredGroups.length === 0 ? (
         <div className="py-16 text-center rounded-2xl"
           style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)" }}>
           <div className="text-4xl mb-3">📋</div>
@@ -138,74 +158,147 @@ export default function YangiliklarPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map((u, i) => {
-            const sc = scfg(u.status);
-            return (
-              <div key={u.id}
-                className="flex flex-col md:grid md:grid-cols-[1.5fr_2fr_1.2fr_1fr_1fr_80px] gap-3 items-center p-4 rounded-2xl transition-all"
-                style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", animationDelay:`${i*30}ms` }}
-                onMouseEnter={(e:any) => e.currentTarget.style.background="rgba(255,255,255,0.055)"}
-                onMouseLeave={(e:any) => e.currentTarget.style.background="rgba(255,255,255,0.03)"}>
+        <div className="space-y-3">
+          {filteredGroups.map(g => {
+            const isOpen = openId === g.projectId;
+            const sc = scfg(g.lastUpdate.status);
+            const jarayondaCount = g.updates.filter(u => u.status === "JARAYONDA").length;
+            const muammolCount   = g.updates.filter(u => u.status === "MUAMMOLI").length;
+            const tugallanCount  = g.updates.filter(u => u.status === "TUGALLANGAN").length;
 
-                {/* Loyiha */}
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
+            return (
+              <div key={g.projectId} className="rounded-2xl overflow-hidden"
+                style={{ border:`1px solid ${isOpen ? "rgba(59,130,246,0.25)" : "rgba(255,255,255,0.07)"}`, transition:"border-color 0.2s" }}>
+
+                {/* Project row — header */}
+                <button
+                  className="w-full flex items-center gap-4 px-5 py-4 text-left transition-all"
+                  style={{ background: isOpen ? "rgba(59,130,246,0.08)" : "rgba(255,255,255,0.03)" }}
+                  onMouseEnter={e => { if (!isOpen) e.currentTarget.style.background="rgba(255,255,255,0.055)"; }}
+                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background="rgba(255,255,255,0.03)"; }}
+                  onClick={() => setOpenId(isOpen ? null : g.projectId)}>
+
+                  {/* Icon */}
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
                     style={{ background:"rgba(59,130,246,0.15)", border:"1px solid rgba(59,130,246,0.25)" }}>
                     🏗️
                   </div>
-                  <p className="text-xs font-semibold line-clamp-1" style={{ color:"rgba(160,190,240,0.85)" }}>
-                    {u.projectName ?? `#${u.projectId}`}
-                  </p>
-                </div>
 
-                {/* Sarlavha */}
-                <div className="w-full md:w-auto">
-                  <p className="text-sm font-semibold line-clamp-1" style={{ color:"rgba(200,220,255,0.9)" }}>{u.title}</p>
-                  {u.description && (
-                    <p className="text-xs line-clamp-1 mt-0.5" style={{ color:"rgba(120,150,200,0.55)" }}>{u.description}</p>
-                  )}
-                </div>
+                  {/* Name */}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm truncate" style={{ color:"rgba(200,220,255,0.95)" }}>
+                      {g.projectName}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color:"rgba(100,130,200,0.5)" }}>
+                      {g.updates.length} ta yangilik
+                    </p>
+                  </div>
 
-                {/* Yuboruvchi */}
-                <p className="text-xs w-full md:w-auto" style={{ color:"rgba(100,130,200,0.55)" }}>
-                  👤 {u.createdByFullName ?? "—"}
-                </p>
+                  {/* Mini stats */}
+                  <div className="hidden sm:flex items-center gap-2">
+                    {jarayondaCount > 0 && (
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background:"rgba(245,158,11,0.15)", color:"#f59e0b" }}>
+                        ⚡ {jarayondaCount}
+                      </span>
+                    )}
+                    {muammolCount > 0 && (
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background:"rgba(239,68,68,0.15)", color:"#ef4444" }}>
+                        ⚠️ {muammolCount}
+                      </span>
+                    )}
+                    {tugallanCount > 0 && (
+                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background:"rgba(16,185,129,0.15)", color:"#10b981" }}>
+                        ✅ {tugallanCount}
+                      </span>
+                    )}
+                  </div>
 
-                {/* Holat */}
-                <div className="w-full md:w-auto">
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  {/* Last status */}
+                  <span className="hidden md:block text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
                     style={{ background:`${sc.color}18`, color:sc.color, border:`1px solid ${sc.color}30` }}>
                     {sc.emoji} {sc.label}
                   </span>
-                </div>
 
-                {/* Sana */}
-                <p className="text-xs w-full md:w-auto" style={{ color:"rgba(100,130,200,0.5)" }}>
-                  {u.createdAt ? new Date(u.createdAt).toLocaleDateString("uz-UZ") : "—"}
-                </p>
+                  {/* Chevron */}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                    style={{ color:"rgba(100,130,200,0.5)", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition:"transform 0.2s", flexShrink:0 }}>
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
 
-                {/* Rasm */}
-                <div className="w-full md:w-auto">
-                  {u.imageUrl ? (
-                    <button onClick={() => setModalImg(`${API_BASE}${u.imageUrl}`)}
-                      className="block relative overflow-hidden rounded-xl transition-all"
-                      style={{ border:"1px solid rgba(255,255,255,0.1)", maxWidth:80, minHeight:56 }}
-                      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.borderColor="rgba(96,165,250,0.5)"}
-                      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.borderColor="rgba(255,255,255,0.1)"}>
-                      <img src={`${API_BASE}${u.imageUrl}`} alt="rasm"
-                        className="w-full object-cover"
-                        style={{ height:56, display:"block" }} />
-                      <div className="absolute inset-0 flex items-center justify-center"
-                        style={{ background:"rgba(0,0,0,0)", transition:"background 0.2s" }}
-                        onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background="rgba(0,0,0,0.45)"}
-                        onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background="rgba(0,0,0,0)"}>
-                      </div>
-                    </button>
-                  ) : (
-                    <span className="text-xs" style={{ color:"rgba(100,130,200,0.35)" }}>—</span>
-                  )}
-                </div>
+                {/* Updates list — expanded */}
+                {isOpen && (
+                  <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+                    {/* sub-header */}
+                    <div className="hidden md:grid px-5 py-2 text-[10px] font-bold uppercase tracking-widest"
+                      style={{ gridTemplateColumns:"2fr 1.2fr 1fr 1fr 80px", color:"rgba(100,130,200,0.4)", background:"rgba(255,255,255,0.02)" }}>
+                      <span>Sarlavha</span>
+                      <span>Yuboruvchi</span>
+                      <span>Holat</span>
+                      <span>Sana</span>
+                      <span>Rasm</span>
+                    </div>
+
+                    {g.updates.map((u, i) => {
+                      const usc = scfg(u.status);
+                      return (
+                        <div key={u.id}
+                          className="md:grid px-5 py-3.5 flex flex-col gap-2 transition-all"
+                          style={{
+                            gridTemplateColumns:"2fr 1.2fr 1fr 1fr 80px",
+                            alignItems:"center",
+                            gap:"12px",
+                            background: i%2===0 ? "rgba(255,255,255,0.015)" : "transparent",
+                            borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                          }}>
+
+                          {/* Sarlavha */}
+                          <div>
+                            <p className="text-sm font-semibold" style={{ color:"rgba(200,220,255,0.9)" }}>{u.title}</p>
+                            {u.description && (
+                              <p className="text-xs mt-0.5 line-clamp-1" style={{ color:"rgba(120,150,200,0.55)" }}>{u.description}</p>
+                            )}
+                          </div>
+
+                          {/* Yuboruvchi */}
+                          <p className="text-xs" style={{ color:"rgba(100,130,200,0.6)" }}>
+                            👤 {u.createdByFullName ?? "—"}
+                          </p>
+
+                          {/* Holat */}
+                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full w-fit"
+                            style={{ background:`${usc.color}18`, color:usc.color, border:`1px solid ${usc.color}30` }}>
+                            {usc.emoji} {usc.label}
+                          </span>
+
+                          {/* Sana */}
+                          <p className="text-xs" style={{ color:"rgba(100,130,200,0.5)" }}>
+                            {u.createdAt ? new Date(u.createdAt).toLocaleDateString("uz-UZ") : "—"}
+                          </p>
+
+                          {/* Rasm */}
+                          <div>
+                            {u.imageUrl ? (
+                              <button onClick={() => setModalImg(`${API_BASE}${u.imageUrl}`)}
+                                className="block relative overflow-hidden rounded-xl transition-all"
+                                style={{ border:"1px solid rgba(255,255,255,0.1)", width:72, height:52 }}
+                                onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.borderColor="rgba(96,165,250,0.5)"}
+                                onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.borderColor="rgba(255,255,255,0.1)"}>
+                                <img src={`${API_BASE}${u.imageUrl}`} alt="rasm"
+                                  className="w-full h-full object-cover" />
+                              </button>
+                            ) : (
+                              <span className="text-xs" style={{ color:"rgba(100,130,200,0.3)" }}>—</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -213,7 +306,7 @@ export default function YangiliklarPage() {
       )}
 
       <p className="text-xs text-center" style={{ color:"rgba(100,130,200,0.35)" }}>
-        Jami {filtered.length} ta yangilik ko&apos;rsatilmoqda
+        Jami {filteredGroups.length} ta loyiha · {updates.length} ta yangilik
       </p>
 
       {/* Image Modal */}
@@ -230,11 +323,6 @@ export default function YangiliklarPage() {
             <img src={modalImg} alt="yangilik rasmi"
               className="w-full rounded-2xl object-contain"
               style={{ maxHeight:"80vh", border:"1px solid rgba(255,255,255,0.15)" }} />
-            <a href={modalImg} download
-              className="block mt-3 text-center text-sm font-bold py-2 rounded-xl"
-              style={{ background:"rgba(59,130,246,0.2)", color:"#60a5fa", border:"1px solid rgba(59,130,246,0.3)" }}>
-              ⬇️ Yuklab olish
-            </a>
           </div>
         </div>
       )}
