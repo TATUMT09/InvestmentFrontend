@@ -98,18 +98,25 @@ export default function HokimUserlarPage() {
     if (form.role === "TASHKILOT" && !form.organizationType) { setErr("Tashkilot turi tanlanishi shart"); return; }
     setSaving(true); setErr("");
     try {
+      const cleanDto = (dto: UserCreateDto) => ({
+        ...dto,
+        department: dto.department?.trim() || undefined,
+        organizationType: dto.organizationType?.trim() || undefined,
+      });
       if (modal === "create") {
-        const created = await createUser(form);
+        const created = await createUser(cleanDto(form));
         setItems(p => [created, ...p]);
       } else if (editing) {
-        const dto = form.password.trim()
-          ? { ...form, active: editing.active }
-          : { ...form, password:"", active: editing.active };
-        const updated = await updateUser(editing.id, dto);
+        const base = { ...form, active: editing.active };
+        if (!form.password.trim()) base.password = "";
+        const updated = await updateUser(editing.id, cleanDto(base));
         setItems(p => p.map(u => u.id === updated.id ? updated : u));
       }
       closeModal();
-    } catch { setErr("Saqlashda xato yuz berdi"); }
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setErr(msg || "Saqlashda xato yuz berdi");
+    }
     finally  { setSaving(false); }
   };
 
@@ -353,23 +360,13 @@ export default function HokimUserlarPage() {
                     onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.1)";}} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold tracking-widest mb-1.5" style={{ color:"rgba(100,130,200,0.6)" }}>ROL</label>
-                  <select value={form.role}
-                    onChange={e=>{ f("role",e.target.value); if (e.target.value!=="TASHKILOT") f("organizationType",""); }}
-                    className={`${inp} cursor-pointer appearance-none`} style={inpS}>
-                    {ROLES.map(r => <option key={r} value={r} style={{ background:"#111e38" }}>{rcfg(r).label}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold tracking-widest mb-1.5" style={{ color:"rgba(100,130,200,0.6)" }}>BO&apos;LIM</label>
-                  <select value={form.department??""} onChange={e=>f("department",e.target.value)}
-                    className={`${inp} cursor-pointer appearance-none`} style={inpS}>
-                    <option value="" style={{ background:"#111e38" }}>— Tanlang —</option>
-                    {DEPARTMENTS.map(d => <option key={d.value} value={d.value} style={{ background:"#111e38" }}>{d.label}</option>)}
-                  </select>
-                </div>
+              <div>
+                <label className="block text-[11px] font-bold tracking-widest mb-1.5" style={{ color:"rgba(100,130,200,0.6)" }}>ROL</label>
+                <select value={form.role}
+                  onChange={e=>{ f("role",e.target.value); if (e.target.value!=="TASHKILOT") f("organizationType",""); }}
+                  className={`${inp} cursor-pointer appearance-none`} style={inpS}>
+                  {ROLES.map(r => <option key={r} value={r} style={{ background:"#111e38" }}>{rcfg(r).label}</option>)}
+                </select>
               </div>
               {form.role === "TASHKILOT" && (
                 <div>

@@ -98,18 +98,25 @@ export default function InvestFoydalanuvchilarPage() {
     if (form.role === "TASHKILOT" && !form.organizationType) { setErr("Tashkilot turi tanlanishi shart"); return; }
     setSaving(true); setErr("");
     try {
+      const clean = (dto: UserCreateDto & { active?: boolean }) => ({
+        ...dto,
+        department: dto.department?.trim() || undefined,
+        organizationType: dto.organizationType?.trim() || undefined,
+      });
       if (modal === "create") {
-        const created = await createUser(form);
+        const created = await createUser(clean(form));
         setItems(prev => [created, ...prev]);
       } else if (editing) {
-        const dto = form.password.trim()
-          ? { ...form, active: editing.active }
-          : { ...form, password: "", active: editing.active };
-        const updated = await updateUser(editing.id, dto);
+        const base = { ...form, active: editing.active };
+        if (!form.password.trim()) base.password = "";
+        const updated = await updateUser(editing.id, clean(base));
         setItems(prev => prev.map(u => u.id === updated.id ? updated : u));
       }
       closeModal();
-    } catch { setErr("Saqlashda xato yuz berdi"); }
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setErr(msg || "Saqlashda xato yuz berdi");
+    }
     finally  { setSaving(false); }
   };
 
