@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { getFiles, uploadFile } from "@/services/fileService";
+import { useAuthStore } from "@/store/authStore";
+import { useUiStore } from "@/store/uiStore";
 import type { FileItem } from "@/types/api.types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -24,9 +26,23 @@ const TYPE_OPTIONS = ["Barcha turlar", "IMAGE", "DOCUMENT", "VIDEO"];
 const TYPE_LABELS: Record<string, string> = { IMAGE: "Rasm", DOCUMENT: "Hujjat", VIDEO: "Video" };
 
 const selBase = "px-3 py-2 rounded-xl text-xs font-medium outline-none cursor-pointer appearance-none";
-const selStyle = { background: "#fff", border: `1.5px solid ${CDD}`, color: N };
 
 export default function HujjatlarPage() {
+  const { user } = useAuthStore();
+  const { lightMode } = useUiStore();
+  const isHokim = user?.role === "HOKIM" || user?.role === "hokim";
+
+  const card    = lightMode ? "#fff"    : "#0d1f3c";
+  const cardBdr = lightMode ? "#dde3f0" : "#1e3a5f";
+  const hdrBg   = lightMode ? "#fff"    : "rgba(13,31,60,0.85)";
+  const hdrBdr  = lightMode ? "#dde3f0" : "#0d1f3c40";
+  const inpBg   = lightMode ? "#fff"    : "#122040";
+  const inpBdr  = lightMode ? "#dde3f0" : "#1e3a5f";
+  const txt1    = lightMode ? "#0d1f3c" : "#e2eaff";
+  const txt2    = lightMode ? "#5a6a8a" : "#8896b0";
+  const txt3    = lightMode ? "#8a9aba" : "#4a6a8a";
+  const emptyBg = lightMode ? "#f0f4ff" : "#122040";
+
   const [files,        setFiles]        = useState<FileItem[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [search,       setSearch]       = useState("");
@@ -74,10 +90,10 @@ export default function HujjatlarPage() {
     setSelectedFile(null); setUploadError("");
   };
 
-  const inpStyle = { background: CD, border: `1.5px solid ${CDD}`, color: N };
+  const inpStyle = { background: inpBg, border: `1.5px solid ${inpBdr}`, color: txt1 };
 
   return (
-    <div className="-m-6 flex flex-col" style={{ minHeight: "calc(100vh - 60px)", background: "#faf7f0" }}>
+    <div className="-m-6 flex flex-col" style={{ minHeight: "calc(100vh - 60px)" }}>
 
       {/* Upload Modal */}
       {modalOpen && (
@@ -171,46 +187,49 @@ export default function HujjatlarPage() {
 
       {/* Header */}
       <div className="flex-shrink-0 px-6 pt-5 pb-4 flex items-start justify-between"
-        style={{ background: "#fff", borderBottom: `1px solid ${CDD}`, boxShadow: `0 1px 0 ${CDD}` }}>
+        style={{ background: hdrBg, borderBottom: `1px solid ${hdrBdr}`, boxShadow: `0 1px 0 ${hdrBdr}`, backdropFilter:"blur(8px)", transition:"background 0.3s" }}>
         <div>
           <span className="inline-block text-[10px] font-bold tracking-widest px-2.5 py-1 rounded-lg mb-1.5"
-            style={{ background: "#eff6ff", border: "1px solid #bfdbfe", color: "#1d4ed8" }}>
+            style={{ background: lightMode?"#eff6ff":"#1d4ed820", border: lightMode?"1px solid #bfdbfe":"1px solid #1d4ed850", color: "#3b82f6" }}>
             HUJJATLAR
           </span>
-          <h1 className="text-lg font-bold" style={{ color: N }}>Hujjatlar</h1>
-          <p className="text-[11px] mt-0.5" style={{ color: T2 }}>Barcha hujjatlar ro&apos;yxati</p>
+          <h1 className="text-lg font-bold" style={{ color: txt1 }}>Hujjatlar</h1>
+          <p className="text-[11px] mt-0.5" style={{ color: txt2 }}>Barcha hujjatlar ro&apos;yxati</p>
         </div>
-        <button onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white mt-1 transition-all"
-          style={{ background: N }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-          onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          Hujjat yuklash
-        </button>
+        {!isHokim && (
+          <button onClick={() => setModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white mt-1 transition-all"
+            style={{ background: "#1d4ed8" }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
+            onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Hujjat yuklash
+          </button>
+        )}
       </div>
 
       {/* Filters */}
       <div className="px-6 py-3 flex items-center gap-2 flex-shrink-0">
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className={selBase} style={selStyle}>
+        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className={selBase}
+          style={{ background: inpBg, border: `1.5px solid ${inpBdr}`, color: txt1 }}>
           {TYPE_OPTIONS.map(v => (
             <option key={v} value={v}>{v === "Barcha turlar" ? v : (TYPE_LABELS[v] ?? v)}</option>
           ))}
         </select>
         <div className="relative flex-1 max-w-[240px]">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2" width="12" height="12" viewBox="0 0 24 24"
-            fill="none" stroke={T3} strokeWidth="2">
+            fill="none" stroke={txt3} strokeWidth="2">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Qidirish..."
             className="w-full pl-8 pr-3 py-2 rounded-xl text-xs outline-none transition-all"
-            style={{ background: "#fff", border: `1.5px solid ${CDD}`, color: N }}
-            onFocus={e => { e.target.style.borderColor = N; e.target.style.boxShadow = `0 0 0 3px ${N}10`; }}
-            onBlur={e  => { e.target.style.borderColor = CDD; e.target.style.boxShadow = "none"; }} />
+            style={{ background: inpBg, border: `1.5px solid ${inpBdr}`, color: txt1 }}
+            onFocus={e => { e.target.style.borderColor = "#3b82f6"; e.target.style.boxShadow = "0 0 0 3px #3b82f620"; }}
+            onBlur={e  => { e.target.style.borderColor = inpBdr; e.target.style.boxShadow = "none"; }} />
         </div>
-        <span className="ml-auto text-xs font-medium" style={{ color: T2 }}>{filtered.length} ta</span>
+        <span className="ml-auto text-xs font-medium" style={{ color: txt2 }}>{filtered.length} ta</span>
       </div>
 
       {/* Grid */}
@@ -219,18 +238,18 @@ export default function HujjatlarPage() {
           <div className="grid grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => (
               <div key={i} className="rounded-2xl p-4 h-[148px] animate-pulse"
-                style={{ background: "#fff", border: `1px solid ${CDD}` }} />
+                style={{ background: card, border: `1px solid ${cardBdr}` }} />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: CD }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={T3} strokeWidth="1.5">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style={{ background: emptyBg }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={txt3} strokeWidth="1.5">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
               </svg>
             </div>
-            <p className="text-sm font-medium" style={{ color: T2 }}>Hujjatlar topilmadi</p>
+            <p className="text-sm font-medium" style={{ color: txt2 }}>Hujjatlar topilmadi</p>
           </div>
         ) : (
           <div className="grid grid-cols-4 gap-4">
@@ -240,13 +259,13 @@ export default function HujjatlarPage() {
               const href = `${BASE_URL}${f.fileUrl}`;
               return (
                 <div key={f.id} className="rounded-2xl p-4 relative group transition-all"
-                  style={{ background: "#fff", border: `1px solid ${CDD}`, boxShadow: `0 1px 3px ${N}06` }}
+                  style={{ background: card, border: `1px solid ${cardBdr}`, boxShadow: lightMode ? `0 1px 3px ${N}06` : "0 2px 8px #00000030" }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = cfg.color + "55")}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = CDD)}>
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = cardBdr)}>
 
                   <a href={href} target="_blank" rel="noreferrer"
                     className="absolute top-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
-                    style={{ background: CD, color: T2 }}>
+                    style={{ background: inpBg, color: txt2 }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -258,10 +277,10 @@ export default function HujjatlarPage() {
                     <span className="text-xs font-bold" style={{ color: cfg.color }}>{ext}</span>
                   </div>
 
-                  <p className="text-sm font-semibold leading-snug mb-1 pr-6" style={{ color: N }}>
+                  <p className="text-sm font-semibold leading-snug mb-1 pr-6" style={{ color: txt1 }}>
                     {f.title}
                   </p>
-                  <p className="text-[11px] mb-3 truncate" style={{ color: T3 }}>
+                  <p className="text-[11px] mb-3 truncate" style={{ color: txt3 }}>
                     {f.fileName}
                   </p>
 
@@ -270,7 +289,7 @@ export default function HujjatlarPage() {
                       style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>
                       {TYPE_LABELS[f.fileType] ?? f.fileType}
                     </span>
-                    <span className="text-[11px] font-medium" style={{ color: T3 }}>
+                    <span className="text-[11px] font-medium" style={{ color: txt3 }}>
                       {formatSize(f.size)}
                     </span>
                   </div>
