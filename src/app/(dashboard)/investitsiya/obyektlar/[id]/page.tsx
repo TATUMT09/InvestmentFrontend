@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getProject, getProjectTasks, getProjectTasksGrouped, importProjectTasks, importProjectTasksDocx } from "@/services/projectService";
 import { getProjectUpdates } from "@/services/projectUpdateService";
+import { useAuthStore } from "@/store/authStore";
 import type { Project, ProjectTask, ProjectTaskGroup, ProjectUpdate } from "@/types/api.types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -59,6 +60,8 @@ function InfoCard({ label, value, icon }: { label: string; value: string; icon: 
 export default function ObyektDetailPage() {
   const { id }   = useParams<{ id: string }>();
   const router   = useRouter();
+  const { user } = useAuthStore();
+  const isHokim  = user?.role === "HOKIM" || user?.role === "hokim";
   const fileRef      = useRef<HTMLInputElement>(null);
   const fileDocxRef  = useRef<HTMLInputElement>(null);
 
@@ -702,8 +705,8 @@ export default function ObyektDetailPage() {
           )}
         </div>
 
-        {/* File import — ikki blok yonma-yon */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* File import — faqat Investitsiya uchun */}
+        {!isHokim && <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
           {/* ── Excel/CSV import ── */}
           <div className="rounded-2xl overflow-hidden" style={{ background:"#fff", border:`1px solid ${CDD}` }}>
@@ -895,7 +898,7 @@ export default function ObyektDetailPage() {
             </div>
           </div>
 
-        </div>{/* /grid */}
+        </div>}{/* /grid + isHokim check */}
 
       </div>
 

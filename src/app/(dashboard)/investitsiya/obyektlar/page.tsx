@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { getProjects, createProject, updateProject, deleteProject } from "@/services/projectService";
 import { getUsers } from "@/services/userService";
+import { useAuthStore } from "@/store/authStore";
 import type { Project, ProjectCreateDto, ApiUser } from "@/types/api.types";
 
 const N="#0d1f3c", G="#c9a84c", CD="#f0ead8", CDD="#e4dbc8", T2="#8896b0", T3="#b0bdd4";
@@ -37,6 +38,8 @@ const fmtMoney = (v?: number) =>
 
 export default function InvestObyektlarPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
+  const isHokim = user?.role === "HOKIM" || user?.role === "hokim";
   const [items,    setItems]    = useState<Project[]>([]);
   const [users,    setUsers]    = useState<ApiUser[]>([]);
   const [loading,  setLoading]  = useState(true);
@@ -238,20 +241,24 @@ export default function InvestObyektlarPage() {
                           onMouseLeave={e=>(e.currentTarget.style.background="#f0fdf4")}>
                           Batafsil
                         </button>
-                        <button onClick={e=>{e.stopPropagation();openEdit(o);}}
-                          className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all"
-                          style={{ background:"#eff6ff", color:"#1d4ed8", border:"1px solid #bfdbfe" }}
-                          onMouseEnter={e=>(e.currentTarget.style.background="#dbeafe")}
-                          onMouseLeave={e=>(e.currentTarget.style.background="#eff6ff")}>
-                          Tahrir
-                        </button>
-                        <button onClick={e=>{e.stopPropagation();setDelId(o.id);}}
-                          className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all"
-                          style={{ background:"#fef2f2", color:"#dc2626", border:"1px solid #fecaca" }}
-                          onMouseEnter={e=>(e.currentTarget.style.background="#fee2e2")}
-                          onMouseLeave={e=>(e.currentTarget.style.background="#fef2f2")}>
-                          O&apos;chirish
-                        </button>
+                        {!isHokim && (
+                          <button onClick={e=>{e.stopPropagation();openEdit(o);}}
+                            className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all"
+                            style={{ background:"#eff6ff", color:"#1d4ed8", border:"1px solid #bfdbfe" }}
+                            onMouseEnter={e=>(e.currentTarget.style.background="#dbeafe")}
+                            onMouseLeave={e=>(e.currentTarget.style.background="#eff6ff")}>
+                            Tahrir
+                          </button>
+                        )}
+                        {!isHokim && (
+                          <button onClick={e=>{e.stopPropagation();setDelId(o.id);}}
+                            className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all"
+                            style={{ background:"#fef2f2", color:"#dc2626", border:"1px solid #fecaca" }}
+                            onMouseEnter={e=>(e.currentTarget.style.background="#fee2e2")}
+                            onMouseLeave={e=>(e.currentTarget.style.background="#fef2f2")}>
+                            O&apos;chirish
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
