@@ -132,9 +132,9 @@ export default function InvestObyektlarPage() {
   };
 
   const selectedUser = users.find(u => u.id === form.ownerId);
-  const mInp  = { background:"#f0ead8", border:"1.5px solid #e4dbc8", color:"#0d1f3c" };
-  const mInpF = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => { e.target.style.borderColor="#0d1f3c"; };
-  const mInpB = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => { e.target.style.borderColor="#e4dbc8"; };
+  const mInp  = { background:"#f1f5f9", border:"1.5px solid #94a3b8", color:"#0d1f3c" };
+  const mInpF = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => { e.target.style.borderColor="#1d4ed8"; e.target.style.boxShadow="0 0 0 3px #1d4ed820"; };
+  const mInpB = (e: React.FocusEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => { e.target.style.borderColor="#94a3b8"; e.target.style.boxShadow="none"; };
 
   return (
     <div className="-m-6 flex flex-col" style={{ minHeight:"calc(100vh - 60px)" }}>
