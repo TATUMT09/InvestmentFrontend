@@ -13,11 +13,7 @@ export default function UserHisobotlarPage() {
         <HisobotCard tur="haftalik" jami={0} bajarildi={0} bajarilmadi={0} period="Bu hafta" />
         <HisobotCard tur="oylik"    jami={0} bajarildi={0} bajarilmadi={0} period="Bu oy" />
       </div>
-      <AiTahlilBlock
-        xulosa=""
-        tavsiyalar={[]}
-        sana=""
-      />
+      <AiTahlilBlock />
     </div>
   );
 }

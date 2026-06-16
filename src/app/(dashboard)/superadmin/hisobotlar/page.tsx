@@ -96,11 +96,7 @@ export default function SuperadminHisobotlarPage() {
         </div>
       </div>
 
-      <AiTahlilBlock
-        xulosa=""
-        tavsiyalar={[]}
-        sana=""
-      />
+      <AiTahlilBlock />
     </div>
   );
 }

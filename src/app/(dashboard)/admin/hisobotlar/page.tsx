@@ -53,11 +53,7 @@ export default function AdminHisobotlarPage() {
         </div>
       </div>
 
-      <AiTahlilBlock
-        xulosa=""
-        tavsiyalar={[]}
-        sana=""
-      />
+      <AiTahlilBlock />
     </div>
   );
 }
