@@ -1,0 +1,333 @@
+/* Leaflet popup custom style */
+.invest-popup .leaflet-popup-content-wrapper {
+  border-radius: 14px !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18) !important;
+  padding: 0 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+.invest-popup .leaflet-popup-content {
+  margin: 12px 14px !important;
+}
+.invest-popup .leaflet-popup-tip-container {
+  margin-top: -1px;
+}
+.invest-popup .leaflet-popup-tip {
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --sidebar-w: 268px;
+    --sidebar-collapsed: 72px;
+    --header-h: 60px;
+    --navy-900: #0a0f1e;
+    --navy-800: #0d1528;
+    --navy-700: #111e38;
+    --navy-600: #162444;
+    --accent:   #3b82f6;
+  }
+  body {
+    @apply antialiased;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f4ff;
+    color: #0f172a;
+  }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.45);
+  }
+  .card        { @apply bg-white rounded-2xl border border-slate-100 shadow-sm; }
+  .card-hover  { @apply card hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200; }
+
+  /* Gradients */
+  .grad-blue   { background: linear-gradient(135deg, #1d4ed8 0%, #4f46e5 100%); }
+  .grad-purple { background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); }
+  .grad-green  { background: linear-gradient(135deg, #059669 0%, #0891b2 100%); }
+  .grad-amber  { background: linear-gradient(135deg, #d97706 0%, #dc2626 100%); }
+  .grad-dark   { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+  .grad-navy   { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); }
+
+  .text-grad {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow */
+  .glow-blue   { box-shadow: 0 0 32px rgba(37,99,235,0.22); }
+  .glow-sm     { box-shadow: 0 0 20px rgba(37,99,235,0.15); }
+
+  .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+  .scrollbar-hide::-webkit-scrollbar { display:none; }
+}
+
+/* Animations */
+@keyframes fadeUp      { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn      { from { opacity:0; } to { opacity:1; } }
+@keyframes scaleIn     { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+@keyframes shimmer     { from { transform:translateX(-100%); } to { transform:translateX(100%); } }
+@keyframes float       { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-8px); } }
+@keyframes floatSlow   { 0%,100% { transform:translateY(0px) rotate(0deg); } 50% { transform:translateY(-12px) rotate(3deg); } }
+@keyframes pulseGlow   { 0%,100% { opacity:0.5; transform:scale(1); } 50% { opacity:1; transform:scale(1.08); } }
+@keyframes spinSlow    { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+@keyframes borderGlow  { 0%,100% { box-shadow:0 0 8px rgba(59,130,246,0.2); } 50% { box-shadow:0 0 24px rgba(59,130,246,0.5); } }
+@keyframes slideLeft   { from { transform:translateX(20px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+@keyframes slideRight  { from { transform:translateX(-20px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+@keyframes twinkle     { 0%,100% { opacity:0.2; transform:scale(0.8); } 50% { opacity:1; transform:scale(1.2); } }
+
+.anim-fade-up    { animation: fadeUp    0.45s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-fade-in    { animation: fadeIn    0.3s  ease both; }
+.anim-scale-in   { animation: scaleIn  0.25s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-slide-left { animation: slideLeft 0.35s cubic-bezier(0.16,1,0.3,1) both; }
+.anim-float      { animation: float    3s ease-in-out infinite; }
+.anim-float-slow { animation: floatSlow 6s ease-in-out infinite; }
+.anim-pulse-glow { animation: pulseGlow 2.5s ease-in-out infinite; }
+.anim-spin-slow  { animation: spinSlow  12s linear infinite; }
+.anim-twinkle    { animation: twinkle   3s ease-in-out infinite; }
+
+.anim-delay-1 { animation-delay:0.06s; }
+.anim-delay-2 { animation-delay:0.12s; }
+.anim-delay-3 { animation-delay:0.18s; }
+.anim-delay-4 { animation-delay:0.24s; }
+.anim-delay-5 { animation-delay:0.30s; }
+.anim-delay-6 { animation-delay:0.36s; }
+
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE  — .light-mode class layoutda mavjud bo'lganda
+   ═══════════════════════════════════════════════════════════════ */
+
+.light-mode main {
+  background: #f0f4ff !important;
+}
+
+/* Barcha matn va border — asosiy override */
+.light-mode main * {
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* ── Dark page backgrounds → oq/açık rangga ── */
+.light-mode main [style*="background: #081526"],
+.light-mode main [style*="background:#081526"],
+.light-mode main [style*="background: #0a0f1e"],
+.light-mode main [style*="background:#0a0f1e"],
+.light-mode main [style*="background: #0d1f3c"],
+.light-mode main [style*="background:#0d1f3c"],
+.light-mode main [style*="background: #0a1628"],
+.light-mode main [style*="background:#0a1628"],
+.light-mode main [style*="background: #07142a"],
+.light-mode main [style*="background:#07142a"] {
+  background: #f0f4ff !important;
+}
+
+/* Dark glass cards / panels → oq */
+.light-mode main [style*="rgba(6,12,28"],
+.light-mode main [style*="rgba(6, 12, 28"],
+.light-mode main [style*="rgba(8,21,38"],
+.light-mode main [style*="rgba(13,20,40"],
+.light-mode main [style*="rgba(13, 20, 40"],
+.light-mode main [style*="rgba(0,0,0,0.4"],
+.light-mode main [style*="rgba(0,0,0,0.5"],
+.light-mode main [style*="rgba(0,0,0,0.6"],
+.light-mode main [style*="rgba(0,0,0,0.7"],
+.light-mode main [style*="rgba(0,0,0,0.8"] {
+  background: #ffffff !important;
+}
+
+/* Dark gradient backgrounds → oq */
+.light-mode main [style*="linear-gradient(135deg, #0"] {
+  background: #f0f4ff !important;
+}
+.light-mode main [style*="linear-gradient(135deg,#0"] {
+  background: #f0f4ff !important;
+}
+
+/* Dark rgba(255,255,255,0.0x) backgrounds → qo'ng'ir/açık */
+.light-mode main [style*="rgba(255,255,255,0.03"],
+.light-mode main [style*="rgba(255,255,255,0.04"],
+.light-mode main [style*="rgba(255,255,255,0.06"],
+.light-mode main [style*="rgba(255,255,255,0.08"],
+.light-mode main [style*="rgba(255,255,255,0.09"] {
+  background: #f8faff !important;
+}
+
+/* ── Status/badge ranglari saqlansin ── */
+.light-mode main [style*="color: #10b981"],.light-mode main [style*="color:#10b981"],
+.light-mode main [style*="color: #34d399"],.light-mode main [style*="color:#34d399"],
+.light-mode main [style*="color: #60a5fa"],.light-mode main [style*="color:#60a5fa"],
+.light-mode main [style*="color: #f59e0b"],.light-mode main [style*="color:#f59e0b"],
+.light-mode main [style*="color: #f87171"],.light-mode main [style*="color:#f87171"],
+.light-mode main [style*="color: #fb923c"],.light-mode main [style*="color:#fb923c"],
+.light-mode main [style*="color: #a78bfa"],.light-mode main [style*="color:#a78bfa"],
+.light-mode main [style*="color: #06b6d4"],.light-mode main [style*="color:#06b6d4"],
+.light-mode main [style*="color: #f97316"],.light-mode main [style*="color:#f97316"],
+.light-mode main [style*="color: #8b5cf6"],.light-mode main [style*="color:#8b5cf6"],
+.light-mode main [style*="color: #3b82f6"],.light-mode main [style*="color:#3b82f6"],
+.light-mode main [style*="color: #38bdf8"],.light-mode main [style*="color:#38bdf8"],
+.light-mode main [style*="color: #fbbf24"],.light-mode main [style*="color:#fbbf24"],
+.light-mode main [style*="color: #c9a84c"],.light-mode main [style*="color:#c9a84c"],
+.light-mode main [style*="color: #16a34a"],.light-mode main [style*="color:#16a34a"],
+.light-mode main [style*="color: #dc2626"],.light-mode main [style*="color:#dc2626"],
+.light-mode main [style*="color: #d97706"],.light-mode main [style*="color:#d97706"],
+.light-mode main [style*="color: #0891b2"],.light-mode main [style*="color:#0891b2"],
+.light-mode main [style*="color: #1d4ed8"],.light-mode main [style*="color:#1d4ed8"],
+.light-mode main [style*="color: #7c3aed"],.light-mode main [style*="color:#7c3aed"],
+.light-mode main [style*="color: #64748b"],.light-mode main [style*="color:#64748b"],
+.light-mode main [style*="color: #94a3b8"],.light-mode main [style*="color:#94a3b8"] {
+  color: inherit !important;
+}
+
+/* Status badge rangli background-lari o'z holicha qoladi (override yo'q) */
+
+/* ── Inputs ── */
+.light-mode main input,
+.light-mode main textarea,
+.light-mode main select {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #0f172a !important;
+}
+.light-mode main input::placeholder,
+.light-mode main textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* ── Modal inputs — oq modal ichida har doim to'q matn
+   Specificity: 0,2,2 — dark-mode main input (0,1,2) ni yengadi ── */
+.dark-mode main input.inp-modal,
+.dark-mode main textarea.inp-modal,
+.dark-mode main select.inp-modal {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+.dark-mode main input.inp-modal::placeholder,
+.dark-mode main textarea.inp-modal::placeholder {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+}
+
+/* ── Modal overlay ── */
+.light-mode [style*="position: fixed"][style*="inset: 0"],
+.light-mode [style*="position:fixed"][style*="inset:0"] {
+  background: rgba(0,0,0,0.35) !important;
+}
+/* ── Dark mode — modal card ── */
+.dark-mode [style*="position: fixed"] [style*="background: #fff"],
+.dark-mode [style*="position: fixed"] [style*="background:#fff"],
+.dark-mode [style*="position: fixed"] [style*="background: #faf7f0"] {
+  background: #0d1528 !important;
+  color: rgba(220,235,255,0.9) !important;
+}
+
+/* ── Map container ── */
+.light-mode .leaflet-container,
+.light-mode .leaflet-container * {
+  color: inherit !important;
+  border-color: inherit !important;
+}
+
+/* ── Header buttons ── */
+.light-mode header button { color: #374151 !important; }
+.light-mode header button[style*="#f87171"] { color: #dc2626 !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE  — .light-mode yo'q bo'lganda (default holat)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Light page backgrounds → qorong'i */
+.dark-mode main [style*="background: #fff;"],
+.dark-mode main [style*="background:#fff;"],
+.dark-mode main [style*="background: #ffffff"],
+.dark-mode main [style*="background:#ffffff"],
+.dark-mode main [style*="background: #faf7f0"],
+.dark-mode main [style*="background:#faf7f0"],
+.dark-mode main [style*="background: #f0ead8"],
+.dark-mode main [style*="background:#f0ead8"],
+.dark-mode main [style*="background: #f0f4ff"],
+.dark-mode main [style*="background:#f0f4ff"],
+.dark-mode main [style*="background: #f8fafc"],
+.dark-mode main [style*="background:#f8fafc"] {
+  background: #0d1528 !important;
+}
+
+/* Light inline text colors → oq */
+.dark-mode main [style*="color: #0d1f3c"],
+.dark-mode main [style*="color:#0d1f3c"] {
+  color: rgba(220,235,255,0.92) !important;
+}
+.dark-mode main [style*="color: #8896b0"],
+.dark-mode main [style*="color:#8896b0"],
+.dark-mode main [style*="color: #b0bdd4"],
+.dark-mode main [style*="color:#b0bdd4"] {
+  color: rgba(150,175,215,0.75) !important;
+}
+
+/* Light border colors → qorong'i */
+.dark-mode main [style*="border-color: #e4dbc8"],
+.dark-mode main [style*="border-color:#e4dbc8"],
+.dark-mode main [style*="1px solid #e4dbc8"],
+.dark-mode main [style*="1.5px solid #e4dbc8"],
+.dark-mode main [style*="1px solid #e2e8f0"],
+.dark-mode main [style*="1.5px solid #e2e8f0"] {
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Light inputs → qorong'i */
+.dark-mode main input,
+.dark-mode main textarea,
+.dark-mode main select {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: rgba(220,235,255,0.9) !important;
+}
+.dark-mode main input::placeholder,
+.dark-mode main textarea::placeholder {
+  color: rgba(255,255,255,0.3) !important;
+}
+
+/* Status badge backgrounds — dark mode'da rangli ko'rinsin */
+.dark-mode main [style*="background: #ecfeff"] { background: rgba(8,145,178,0.18) !important; }
+.dark-mode main [style*="background: #eff6ff"] { background: rgba(29,78,216,0.18) !important; }
+.dark-mode main [style*="background: #f0fdf4"] { background: rgba(22,163,74,0.18) !important; }
+.dark-mode main [style*="background: #fef2f2"] { background: rgba(220,38,38,0.18) !important; }
+.dark-mode main [style*="background: #fffbeb"] { background: rgba(217,119,6,0.18) !important; }
+.dark-mode main [style*="background: #faf5ff"] { background: rgba(124,58,237,0.18) !important; }
+.dark-mode main [style*="background: #ecfdf5"] { background: rgba(5,150,105,0.18) !important; }
+.dark-mode main [style*="background: #f5f3ff"] { background: rgba(124,58,237,0.18) !important; }
+
+/* Dark mode — box-shadow ko'rinishi yaxshilash */
+.dark-mode main [style*="box-shadow: 0 1px 3px rgba(0,0,0,0.08)"],
+.dark-mode main [style*="box-shadow:0 1px 3px rgba(0,0,0,0.08)"] {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+}
+
+/* Map container — o'z ranglarini saqlaydi */
+.dark-mode .leaflet-container,
+.dark-mode .leaflet-container * {
+  color: inherit !important;
+  border-color: inherit !important;
+}

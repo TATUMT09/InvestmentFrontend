@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="sky3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1f35"/>
+      <stop offset="50%" style="stop-color:#1e4060"/>
+      <stop offset="100%" style="stop-color:#6090b8"/>
+    </linearGradient>
+    <linearGradient id="valleyfog" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8c8e0;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#d8eaf5;stop-opacity:0.1"/>
+    </linearGradient>
+    <linearGradient id="station" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d4a60"/>
+      <stop offset="100%" style="stop-color:#1a2e40"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="800" height="500" fill="url(#sky3)"/>
+
+  <!-- Stars -->
+  <circle cx="50" cy="30" r="1.5" fill="white" fill-opacity="0.8"/>
+  <circle cx="130" cy="15" r="1" fill="white" fill-opacity="0.7"/>
+  <circle cx="250" cy="40" r="1.5" fill="white" fill-opacity="0.6"/>
+  <circle cx="380" cy="20" r="1" fill="white" fill-opacity="0.8"/>
+  <circle cx="500" cy="35" r="1.5" fill="white" fill-opacity="0.7"/>
+  <circle cx="650" cy="10" r="1" fill="white" fill-opacity="0.9"/>
+  <circle cx="720" cy="45" r="1.5" fill="white" fill-opacity="0.6"/>
+
+  <!-- Sunset glow -->
+  <ellipse cx="680" cy="200" rx="120" ry="80" fill="#ff8c42" fill-opacity="0.15"/>
+  <ellipse cx="680" cy="200" rx="60" ry="40" fill="#ffb347" fill-opacity="0.2"/>
+
+  <!-- Mountains silhouette far -->
+  <polygon points="0,380 80,200 160,340 260,140 380,300 480,120 600,280 700,160 800,240 800,500 0,500"
+    fill="#1a2c3a" fill-opacity="0.9"/>
+  <!-- Snow highlights -->
+  <polygon points="260,140 240,195 280,195" fill="white" fill-opacity="0.6"/>
+  <polygon points="480,120 455,180 505,180" fill="white" fill-opacity="0.6"/>
+
+  <!-- Valley fog -->
+  <ellipse cx="400" cy="420" rx="500" ry="80" fill="url(#valleyfog)"/>
+
+  <!-- Station building (lower station) -->
+  <rect x="30" y="310" width="140" height="90" rx="6" fill="url(#station)" stroke="#3a6080" stroke-width="1.5"/>
+  <rect x="30" y="310" width="140" height="25" rx="6" fill="#3a6080"/>
+  <rect x="45" y="342" width="35" height="28" rx="3" fill="#6ab8e0" fill-opacity="0.5"/>
+  <rect x="95" y="342" width="35" height="28" rx="3" fill="#6ab8e0" fill-opacity="0.5"/>
+  <!-- Station roof antenna -->
+  <line x1="100" y1="310" x2="100" y2="290" stroke="#5a7a90" stroke-width="2"/>
+  <circle cx="100" cy="288" r="4" fill="#7aa8c0"/>
+  <!-- Station lights -->
+  <circle cx="55" cy="398" r="5" fill="#ffd700" fill-opacity="0.8"/>
+  <circle cx="145" cy="398" r="5" fill="#ffd700" fill-opacity="0.8"/>
+
+  <!-- Cable wires -->
+  <line x1="100" y1="300" x2="780" y2="140" stroke="#ccc" stroke-width="2"/>
+  <line x1="100" y1="307" x2="780" y2="147" stroke="#aaa" stroke-width="1" stroke-opacity="0.4"/>
+
+  <!-- Gondola (evening, lit up) -->
+  <g transform="translate(320, 210)">
+    <line x1="28" y1="-16" x2="28" y2="0" stroke="#bbb" stroke-width="2.5"/>
+    <circle cx="28" cy="-18" r="5" fill="#888"/>
+    <!-- Car body -->
+    <rect x="0" y="0" width="56" height="38" rx="5" fill="#1e3a50" stroke="#3a6080" stroke-width="1.5"/>
+    <!-- Lit windows -->
+    <rect x="5" y="6" width="16" height="12" rx="3" fill="#ffe08a" fill-opacity="0.9"/>
+    <rect x="27" y="6" width="16" height="12" rx="3" fill="#ffe08a" fill-opacity="0.9"/>
+    <!-- Window glow -->
+    <rect x="5" y="6" width="16" height="12" rx="3" fill="#ffcc44" fill-opacity="0.3"/>
+    <rect x="27" y="6" width="16" height="12" rx="3" fill="#ffcc44" fill-opacity="0.3"/>
+    <!-- Base -->
+    <rect x="4" y="30" width="48" height="8" rx="3" fill="#152838"/>
+    <!-- Roof -->
+    <rect x="2" y="0" width="52" height="7" rx="3" fill="#2a5070"/>
+  </g>
+
+  <!-- Far gondola (small) -->
+  <g transform="translate(600, 175)">
+    <line x1="16" y1="-12" x2="16" y2="0" stroke="#bbb" stroke-width="2"/>
+    <circle cx="16" cy="-14" r="3" fill="#888"/>
+    <rect x="0" y="0" width="32" height="22" rx="4" fill="#1e3a50" stroke="#3a6080" stroke-width="1"/>
+    <rect x="3" y="4" width="10" height="8" rx="2" fill="#ffe08a" fill-opacity="0.85"/>
+    <rect x="17" y="4" width="10" height="8" rx="2" fill="#ffe08a" fill-opacity="0.85"/>
+    <rect x="2" y="16" width="28" height="6" rx="2" fill="#152838"/>
+  </g>
+
+  <!-- Label -->
+  <rect x="200" y="448" width="400" height="42" rx="12" fill="#0f172a" fill-opacity="0.8"/>
+  <text x="400" y="464" font-family="sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">KECHKI MANZARA</text>
+  <text x="400" y="482" font-family="sans-serif" font-size="14" font-weight="700" fill="white" text-anchor="middle">🌄 Pastki bekat — kechki ko'rinish</text>
+</svg>

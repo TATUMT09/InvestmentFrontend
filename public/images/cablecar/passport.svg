@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f2444"/>
+      <stop offset="100%" style="stop-color:#071428"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a3460"/>
+      <stop offset="100%" style="stop-color:#0f2040"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <!-- grid lines -->
+  <line x1="0" y1="100" x2="800" y2="100" stroke="#3b82f6" stroke-opacity="0.08" stroke-width="1"/>
+  <line x1="0" y1="200" x2="800" y2="200" stroke="#3b82f6" stroke-opacity="0.08" stroke-width="1"/>
+  <line x1="0" y1="300" x2="800" y2="300" stroke="#3b82f6" stroke-opacity="0.08" stroke-width="1"/>
+  <line x1="0" y1="400" x2="800" y2="400" stroke="#3b82f6" stroke-opacity="0.08" stroke-width="1"/>
+  <!-- main card -->
+  <rect x="40" y="40" width="720" height="420" rx="20" fill="url(#card)" stroke="#3b82f6" stroke-opacity="0.3" stroke-width="1.5"/>
+  <!-- header bar -->
+  <rect x="40" y="40" width="720" height="70" rx="20" fill="#3b82f6" fill-opacity="0.2"/>
+  <rect x="40" y="90" width="720" height="20" rx="0" fill="#3b82f6" fill-opacity="0.15"/>
+  <!-- title -->
+  <text x="400" y="85" font-family="sans-serif" font-size="20" font-weight="700" fill="#93c5fd" text-anchor="middle">LOYIHA PASPORTI</text>
+  <!-- rows -->
+  <text x="80" y="155" font-family="sans-serif" font-size="12" fill="#60a5fa" opacity="0.8">Loyiha nomi</text>
+  <text x="80" y="175" font-family="sans-serif" font-size="15" font-weight="600" fill="#dbeafe">Kanat yo'li qurilishi</text>
+  <line x1="60" y1="190" x2="740" y2="190" stroke="#3b82f6" stroke-opacity="0.15" stroke-width="1"/>
+
+  <text x="80" y="215" font-family="sans-serif" font-size="12" fill="#60a5fa" opacity="0.8">Joylashuv</text>
+  <text x="80" y="235" font-family="sans-serif" font-size="15" font-weight="600" fill="#dbeafe">Samarqand viloyati, tog' hududlari</text>
+  <line x1="60" y1="250" x2="740" y2="250" stroke="#3b82f6" stroke-opacity="0.15" stroke-width="1"/>
+
+  <text x="80" y="275" font-family="sans-serif" font-size="12" fill="#60a5fa" opacity="0.8">Loyiha qiymati</text>
+  <text x="80" y="295" font-family="sans-serif" font-size="15" font-weight="600" fill="#dbeafe">1 million USD</text>
+  <text x="420" y="275" font-family="sans-serif" font-size="12" fill="#60a5fa" opacity="0.8">Xorijiy investitsiya</text>
+  <text x="420" y="295" font-family="sans-serif" font-size="15" font-weight="600" fill="#dbeafe">1 million USD</text>
+  <line x1="60" y1="310" x2="740" y2="310" stroke="#3b82f6" stroke-opacity="0.15" stroke-width="1"/>
+
+  <text x="80" y="335" font-family="sans-serif" font-size="12" fill="#60a5fa" opacity="0.8">Yer maydoni</text>
+  <text x="80" y="355" font-family="sans-serif" font-size="15" font-weight="600" fill="#dbeafe">0.5 gektar</text>
+  <text x="420" y="335" font-family="sans-serif" font-size="12" fill="#60a5fa" opacity="0.8">Ish joylari</text>
+  <text x="420" y="355" font-family="sans-serif" font-size="15" font-weight="600" fill="#dbeafe">45 kishi</text>
+
+  <!-- badges -->
+  <rect x="80" y="400" width="160" height="36" rx="18" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="160" y="423" font-family="sans-serif" font-size="13" font-weight="700" fill="#fcd34d" text-anchor="middle">🏗️ Qurilmoqda</text>
+  <rect x="260" y="400" width="220" height="36" rx="18" fill="#3b82f6" fill-opacity="0.15" stroke="#3b82f6" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="370" y="423" font-family="sans-serif" font-size="13" font-weight="700" fill="#93c5fd" text-anchor="middle">📍 Samarqand viloyati</text>
+</svg>

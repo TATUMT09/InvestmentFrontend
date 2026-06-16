@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#d1fae5"/>
+      <stop offset="100%" style="stop-color:#064e3b"/>
+    </linearGradient>
+    <linearGradient id="row" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#166534"/>
+      <stop offset="100%" style="stop-color:#14532d"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <!-- ceiling structure -->
+  <rect x="0" y="0" width="800" height="60" fill="#f0fdf4" fill-opacity="0.3"/>
+  <line x1="100" y1="0" x2="100" y2="500" stroke="#bbf7d0" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="200" y1="0" x2="200" y2="500" stroke="#bbf7d0" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="300" y1="0" x2="300" y2="500" stroke="#bbf7d0" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="400" y1="0" x2="400" y2="500" stroke="#bbf7d0" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="500" y1="0" x2="500" y2="500" stroke="#bbf7d0" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="600" y1="0" x2="600" y2="500" stroke="#bbf7d0" stroke-opacity="0.3" stroke-width="2"/>
+  <line x1="700" y1="0" x2="700" y2="500" stroke="#bbf7d0" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- planting rows -->
+  <!-- Row 1 -->
+  <rect x="60" y="120" width="680" height="45" rx="6" fill="url(#row)" stroke="#4ade80" stroke-opacity="0.3" stroke-width="1"/>
+  <!-- Row 2 -->
+  <rect x="60" y="220" width="680" height="45" rx="6" fill="url(#row)" stroke="#4ade80" stroke-opacity="0.3" stroke-width="1"/>
+  <!-- Row 3 -->
+  <rect x="60" y="320" width="680" height="45" rx="6" fill="url(#row)" stroke="#4ade80" stroke-opacity="0.3" stroke-width="1"/>
+  <!-- Row 4 -->
+  <rect x="60" y="420" width="680" height="45" rx="6" fill="url(#row)" stroke="#4ade80" stroke-opacity="0.3" stroke-width="1"/>
+
+  <!-- plants on row 1 -->
+  <g fill="#16a34a">
+    <ellipse cx="100" cy="108" rx="15" ry="20"/>
+    <ellipse cx="150" cy="105" rx="18" ry="22"/>
+    <ellipse cx="200" cy="110" rx="14" ry="18"/>
+    <ellipse cx="250" cy="106" rx="16" ry="21"/>
+    <ellipse cx="300" cy="109" rx="15" ry="19"/>
+    <ellipse cx="350" cy="105" rx="17" ry="22"/>
+    <ellipse cx="400" cy="108" rx="14" ry="20"/>
+    <ellipse cx="450" cy="106" rx="16" ry="21"/>
+    <ellipse cx="500" cy="109" rx="15" ry="18"/>
+    <ellipse cx="550" cy="105" rx="18" ry="22"/>
+    <ellipse cx="600" cy="108" rx="14" ry="19"/>
+    <ellipse cx="650" cy="106" rx="16" ry="21"/>
+    <ellipse cx="700" cy="109" rx="15" ry="20"/>
+  </g>
+  <!-- tomatoes on row 1 -->
+  <g fill="#ef4444">
+    <circle cx="155" cy="100" r="6"/>
+    <circle cx="170" cy="95" r="7"/>
+    <circle cx="355" cy="98" r="6"/>
+    <circle cx="405" cy="100" r="7"/>
+    <circle cx="555" cy="97" r="6"/>
+    <circle cx="655" cy="99" r="7"/>
+  </g>
+  <!-- plants on row 2 -->
+  <g fill="#15803d">
+    <ellipse cx="100" cy="208" rx="15" ry="20"/>
+    <ellipse cx="160" cy="205" rx="18" ry="22"/>
+    <ellipse cx="220" cy="210" rx="14" ry="18"/>
+    <ellipse cx="280" cy="206" rx="16" ry="21"/>
+    <ellipse cx="340" cy="209" rx="15" ry="19"/>
+    <ellipse cx="400" cy="205" rx="17" ry="22"/>
+    <ellipse cx="460" cy="208" rx="14" ry="20"/>
+    <ellipse cx="520" cy="206" rx="16" ry="21"/>
+    <ellipse cx="580" cy="209" rx="15" ry="18"/>
+    <ellipse cx="640" cy="205" rx="18" ry="22"/>
+    <ellipse cx="700" cy="208" rx="14" ry="19"/>
+  </g>
+  <g fill="#dc2626">
+    <circle cx="165" cy="198" r="6"/>
+    <circle cx="285" cy="200" r="7"/>
+    <circle cx="405" cy="197" r="6"/>
+    <circle cx="525" cy="200" r="7"/>
+    <circle cx="645" cy="198" r="6"/>
+  </g>
+
+  <!-- irrigation pipes -->
+  <line x1="60" y1="80"  x2="740" y2="80"  stroke="#60a5fa" stroke-width="3" stroke-opacity="0.5"/>
+  <line x1="60" y1="180" x2="740" y2="180" stroke="#60a5fa" stroke-width="3" stroke-opacity="0.5"/>
+
+  <!-- label -->
+  <rect x="250" y="455" width="300" height="36" rx="10" fill="#0f172a" fill-opacity="0.7"/>
+  <text x="400" y="478" font-family="sans-serif" font-size="14" font-weight="700" fill="#86efac" text-anchor="middle">🍅 Gidroponika ichkarisi</text>
+</svg>
