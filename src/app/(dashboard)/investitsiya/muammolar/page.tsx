@@ -8,9 +8,9 @@ import type { Problem } from "@/types/api.types";
 const GOLD = "#c9a84c";
 
 const STATUS_CFG: Record<string,{label:string;color:string;bg:string;border:string}> = {
-  YANGI:      {label:"Yangi",     color:"#38bdf8", bg:"rgba(56,189,248,0.12)",  border:"#38bdf8"},
-  JARAYONDA:  {label:"Jarayonda", color:"#60a5fa", bg:"rgba(96,165,250,0.12)",  border:"#60a5fa"},
-  HAL_ETILDI: {label:"Hal etildi",color:"#34d399", bg:"rgba(52,211,153,0.12)", border:"#34d399"},
+  YANGI:               {label:"Yangi",             color:"#38bdf8", bg:"rgba(56,189,248,0.12)",  border:"#38bdf8"},
+  KORIB_CHIQILMOQDA:   {label:"Ko'rib chiqilmoqda",color:"#60a5fa", bg:"rgba(96,165,250,0.12)",  border:"#60a5fa"},
+  HAL_ETILDI:          {label:"Qilindi ✓",         color:"#34d399", bg:"rgba(52,211,153,0.12)",  border:"#34d399"},
 };
 const fallback=(s:string)=>STATUS_CFG[s]??{label:s,color:"#94a3b8",bg:"rgba(148,163,184,0.12)",border:"#94a3b8"};
 
@@ -237,6 +237,12 @@ export default function MuammolarPage() {
                           style={{ background:h.bg, color:h.color, border:`1px solid ${h.border}60` }}>
                           {h.label}
                         </span>
+                        {p.resolution && (
+                          <p className="text-[10px] mt-1 italic max-w-[140px] truncate"
+                            style={{ color:"rgba(52,211,153,0.6)" }}>
+                            &ldquo;{p.resolution}&rdquo;
+                          </p>
+                        )}
                       </td>
                       <td className="px-4 py-3.5 text-xs font-medium" style={{ color:textSec }}>
                         {p.department ?? p.responsibleDepartment ?? "—"}
@@ -245,7 +251,7 @@ export default function MuammolarPage() {
                         <div className="flex items-center gap-2">
                           {p.status !== "HAL_ETILDI" && (
                             <button disabled={updating === p.id}
-                              onClick={() => handleStatusChange(p, p.status === "YANGI" ? "JARAYONDA" : "HAL_ETILDI")}
+                              onClick={() => handleStatusChange(p, p.status === "YANGI" ? "KORIB_CHIQILMOQDA" : "HAL_ETILDI")}
                               className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all"
                               style={{
                                 background: p.status==="YANGI" ? "rgba(96,165,250,0.18)" : "rgba(52,211,153,0.18)",

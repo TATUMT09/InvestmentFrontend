@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { getProblems, updateProblem } from "@/services/problemService";
+import { useAuthStore } from "@/store/authStore";
 import type { Problem } from "@/types/api.types";
 
 const STATUS_CFG: Record<string, { label: string; color: string }> = {
-  YANGI:      { label: "Yangi",      color: "#64748b" },
-  JARAYONDA:  { label: "Jarayonda",  color: "#f59e0b" },
-  HAL_ETILDI: { label: "Hal etildi", color: "#10b981" },
+  YANGI:               { label: "Yangi",           color: "#64748b" },
+  KORIB_CHIQILMOQDA:   { label: "Ko'rib chiqilmoqda", color: "#f59e0b" },
+  HAL_ETILDI:          { label: "Hal etildi",       color: "#10b981" },
 };
 const cfg = (s: string) => STATUS_CFG[s] ?? { label: s, color: "#64748b" };
 
@@ -14,26 +15,33 @@ const TYPE_ICONS:  Record<string, string> = { ELEKTR:"⚡", SUV:"💧", GAZ:"�
 const TYPE_COLORS: Record<string, string> = { ELEKTR:"#fbbf24", SUV:"#38bdf8", GAZ:"#f87171", YOL:"#a78bfa", HUJJAT:"#94a3b8", MOLIYA:"#34d399", INTERNET:"#60a5fa", BOSHQA:"#94a3b8" };
 
 const TABS = [
-  { key:"barchasi",   label:"Barchasi" },
-  { key:"YANGI",      label:"Yangi" },
-  { key:"JARAYONDA",  label:"Jarayonda" },
-  { key:"HAL_ETILDI", label:"Hal etildi" },
+  { key:"barchasi",          label:"Barchasi" },
+  { key:"YANGI",             label:"Yangi" },
+  { key:"KORIB_CHIQILMOQDA", label:"Ko'rib chiqilmoqda" },
+  { key:"HAL_ETILDI",        label:"Hal etildi" },
 ];
 
 export default function TashkilotMomolarPage() {
+  const { user }  = useAuthStore();
+  const orgType   = user?.organizationType ?? "";
+
   const [tab,      setTab]      = useState("barchasi");
   const [search,   setSearch]   = useState("");
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [izohMap,  setIzohMap]  = useState<Record<number, string>>({});
   const [updating, setUpdating] = useState<number | null>(null);
+  const [errMap,   setErrMap]   = useState<Record<number, string>>({});
 
   useEffect(() => {
     getProblems()
-      .then(setProblems)
+      .then(all => {
+        const mine = orgType ? all.filter(p => p.type === orgType) : all;
+        setProblems(mine);
+      })
       .catch(() => setProblems([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [orgType]);
 
   const filtered = useMemo(() => problems.filter(p => {
     const matchTab    = tab === "barchasi" || p.status === tab;
@@ -50,15 +58,28 @@ export default function TashkilotMomolarPage() {
   problems.forEach(p => { counts[p.status] = (counts[p.status] || 0) + 1; });
 
   const advance = async (p: Problem) => {
-    const next = p.status === "YANGI" ? "JARAYONDA" : p.status === "JARAYONDA" ? "HAL_ETILDI" : null;
+    const next = p.status === "YANGI" ? "KORIB_CHIQILMOQDA" : p.status === "KORIB_CHIQILMOQDA" ? "HAL_ETILDI" : null;
     if (!next) return;
+    const izoh = izohMap[p.id]?.trim() ?? "";
     setUpdating(p.id);
     try {
-      await updateProblem(p.id, { status: next });
-      setProblems(prev => prev.map(x => x.id === p.id ? { ...x, status: next } : x));
-      setIzohMap(prev => { const n = {...prev}; delete n[p.id]; return n; });
-    } catch { /* ignore */ }
-    finally { setUpdating(null); }
+      const dto = next === "HAL_ETILDI" && izoh
+        ? { status: next, resolution: izoh }
+        : { status: next };
+      await updateProblem(p.id, dto);
+      setProblems(prev => prev.map(x =>
+        x.id === p.id
+          ? { ...x, status: next, ...(next === "HAL_ETILDI" && izoh ? { resolution: izoh } : {}) }
+          : x
+      ));
+      if (next === "HAL_ETILDI") {
+        setIzohMap(prev => { const n = {...prev}; delete n[p.id]; return n; });
+      }
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message
+        ?? (e instanceof Error ? e.message : "Xatolik yuz berdi");
+      setErrMap(prev => ({ ...prev, [p.id]: msg }));
+    } finally { setUpdating(null); }
   };
 
   return (
@@ -76,10 +97,10 @@ export default function TashkilotMomolarPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label:"Jami",      val: problems.length,             color:"#60a5fa" },
-          { label:"Yangi",     val: counts["YANGI"]     || 0,    color:"#64748b" },
-          { label:"Jarayonda", val: counts["JARAYONDA"] || 0,    color:"#f59e0b" },
-          { label:"Hal etildi",val: counts["HAL_ETILDI"]|| 0,    color:"#10b981" },
+          { label:"Jami",               val: problems.length,                        color:"#60a5fa" },
+          { label:"Yangi",              val: counts["YANGI"]              || 0,    color:"#64748b" },
+          { label:"Ko'rib chiqilmoqda", val: counts["KORIB_CHIQILMOQDA"] || 0,    color:"#f59e0b" },
+          { label:"Hal etildi",         val: counts["HAL_ETILDI"]         || 0,    color:"#10b981" },
         ].map(s => (
           <div key={s.label} className="p-4 rounded-2xl text-center"
             style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)" }}>
@@ -145,11 +166,14 @@ export default function TashkilotMomolarPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((p) => {
-            const sc       = cfg(p.status);
-            const icon     = TYPE_ICONS[p.type]  ?? "📋";
-            const tcolor   = TYPE_COLORS[p.type] ?? "#94a3b8";
-            const isDone   = p.status === "HAL_ETILDI";
-            const nextLabel = p.status === "YANGI" ? "Jarayonda deb belgilash" : p.status === "JARAYONDA" ? "Hal etildi deb belgilash" : null;
+            const sc        = cfg(p.status);
+            const icon      = TYPE_ICONS[p.type]  ?? "📋";
+            const tcolor    = TYPE_COLORS[p.type] ?? "#94a3b8";
+            const isDone    = p.status === "HAL_ETILDI";
+            const nextLabel = p.status === "YANGI" ? "Ko'rib chiqilmoqda" : p.status === "KORIB_CHIQILMOQDA" ? "Hal etildi deb belgilash" : null;
+            const needsIzoh = p.status === "KORIB_CHIQILMOQDA";
+            const hasIzoh   = (izohMap[p.id] ?? "").trim().length > 0;
+            const canAdvance = !needsIzoh || hasIzoh;
             return (
               <div key={p.id} className="rounded-2xl overflow-hidden"
                 style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)" }}>
@@ -190,37 +214,61 @@ export default function TashkilotMomolarPage() {
 
                 {/* Action area */}
                 {isDone ? (
-                  <div className="px-4 pb-3 flex items-center gap-2">
-                    <span className="text-xs font-semibold" style={{ color:"#34d399" }}>✓ Muvaffaqiyatli yakunlangan</span>
+                  <div className="px-4 pb-4 border-t"
+                    style={{ borderColor:"rgba(52,211,153,0.12)", background:"rgba(52,211,153,0.03)" }}>
+                    <div className="flex items-start gap-2 mt-3">
+                      <span className="text-xs font-bold" style={{ color:"#34d399" }}>✓ Muvaffaqiyatli yakunlangan</span>
+                    </div>
+                    {p.resolution && (
+                      <p className="text-xs mt-1.5 italic"
+                        style={{ color:"rgba(52,211,153,0.65)" }}>
+                        &ldquo;{p.resolution}&rdquo;
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="px-4 pb-4 pt-1 border-t"
                     style={{ borderColor:"rgba(255,255,255,0.06)", background:"rgba(255,255,255,0.01)" }}>
-                    <div className="flex gap-3 items-end mt-3">
-                      <textarea
-                        value={izohMap[p.id] || ""}
-                        onChange={e => setIzohMap(prev => ({ ...prev, [p.id]: e.target.value }))}
-                        placeholder="Izoh qoldiring (ixtiyoriy)..."
-                        rows={1}
-                        className="flex-1 text-sm px-3 py-2 rounded-xl outline-none resize-none"
-                        style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", color:"rgba(200,220,255,0.85)" }}
-                        onFocus={e=>{e.target.style.borderColor="rgba(16,185,129,0.3)";}}
-                        onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.08)";}}
-                      />
+                    {needsIzoh && (
+                      <>
+                        <p className="text-[10px] mb-2 mt-2" style={{ color: hasIzoh ? "rgba(52,211,153,0.6)" : "rgba(248,113,113,0.6)" }}>
+                          {hasIzoh ? "✓ Izoh yozildi" : "⚠ Hal etish uchun izoh yozing"}
+                        </p>
+                        <textarea
+                          value={izohMap[p.id] || ""}
+                          onChange={e => {
+                            setIzohMap(prev => ({ ...prev, [p.id]: e.target.value }));
+                            setErrMap(prev => { const n={...prev}; delete n[p.id]; return n; });
+                          }}
+                          placeholder="Izoh yozing (majburiy)..."
+                          rows={1}
+                          className="w-full text-sm px-3 py-2 rounded-xl outline-none resize-none mb-2"
+                          style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", color:"rgba(200,220,255,0.85)" }}
+                          onFocus={e=>{e.target.style.borderColor="rgba(16,185,129,0.3)";}}
+                          onBlur={e=>{e.target.style.borderColor="rgba(255,255,255,0.08)";}}
+                        />
+                      </>
+                    )}
+                    <div className="flex gap-3 items-center mt-1">
                       <button
-                        disabled={updating === p.id}
+                        disabled={updating === p.id || !canAdvance}
                         onClick={() => advance(p)}
-                        className="text-sm font-bold px-4 py-2 rounded-xl transition-all flex-shrink-0"
+                        className="text-sm font-bold px-4 py-2 rounded-xl transition-all"
                         style={{
                           background:"rgba(16,185,129,0.15)", border:"1px solid rgba(16,185,129,0.3)", color:"#34d399",
-                          opacity: updating === p.id ? 0.6 : 1,
-                          cursor:  updating === p.id ? "not-allowed" : "pointer",
+                          opacity: (updating === p.id || !canAdvance) ? 0.4 : 1,
+                          cursor:  (updating === p.id || !canAdvance) ? "not-allowed" : "pointer",
                         }}
-                        onMouseEnter={e=>{ if (updating !== p.id) (e.currentTarget as HTMLButtonElement).style.background="rgba(16,185,129,0.25)"; }}
+                        onMouseEnter={e=>{ if (updating !== p.id && canAdvance) (e.currentTarget as HTMLButtonElement).style.background="rgba(16,185,129,0.25)"; }}
                         onMouseLeave={e=>{ (e.currentTarget as HTMLButtonElement).style.background="rgba(16,185,129,0.15)"; }}>
                         {updating === p.id ? "..." : `✓ ${nextLabel}`}
                       </button>
                     </div>
+                    {errMap[p.id] && (
+                      <p className="text-xs mt-2 px-1" style={{ color:"#f87171" }}>
+                        ⚠ {errMap[p.id]}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

@@ -20,6 +20,7 @@ export interface Project {
   actualEndDate?: string | null;
   ownerFullName?: string;
   owner?: { id: number; fullName: string; username: string };
+  cameraUrl?: string;
 }
 
 export interface ProjectCreateDto {
@@ -38,6 +39,7 @@ export interface ProjectCreateDto {
   spentMoney?: number;
   startDate?: string;
   plannedEndDate?: string;
+  cameraUrl?: string;
 }
 
 // ─── Problems ───────────────────────────────────────────
@@ -57,6 +59,7 @@ export interface Problem {
   latitude?: number;
   longitude?: number;
   createdAt?: string;
+  resolution?: string;
 }
 
 export interface ProblemCreateDto {
@@ -75,6 +78,7 @@ export interface ProblemUpdateDto {
   description?: string;
   status?: string;
   responsibleDepartment?: string;
+  resolution?: string;
 }
 
 // ─── Contracts ──────────────────────────────────────────

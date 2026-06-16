@@ -71,6 +71,7 @@ export default function ObyektDetailPage() {
   const [updates,      setUpdates]      = useState<ProjectUpdate[]>([]);
   const [updatesLoad,  setUpdatesLoad]  = useState(true);
   const [modalImg,     setModalImg]     = useState<string | null>(null);
+  const [cameraOpen,   setCameraOpen]   = useState(false);
   const [loading,      setLoading]      = useState(true);
   const [tasksLoad,    setTasksLoad]    = useState(true);
   const [groupedLoad,  setGroupedLoad]  = useState(true);
@@ -191,8 +192,8 @@ export default function ObyektDetailPage() {
       {/* Header */}
       <div className="flex-shrink-0 px-6 pt-5 pb-4"
         style={{ background:"#fff", borderBottom:`1px solid ${CDD}`, boxShadow:`0 1px 0 ${CDD}` }}>
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4 min-w-0">
             {/* Back */}
             <button onClick={()=>router.back()}
               className="w-9 h-9 rounded-xl flex items-center justify-center mt-0.5 transition-all flex-shrink-0"
@@ -203,7 +204,7 @@ export default function ObyektDetailPage() {
                 <path d="M19 12H5M12 5l-7 7 7 7"/>
               </svg>
             </button>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="text-[10px] font-bold tracking-widest px-2.5 py-1 rounded-lg"
                   style={{ background:"#eff6ff", border:"1px solid #bfdbfe", color:"#1d4ed8" }}>
@@ -224,6 +225,18 @@ export default function ObyektDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Real ko'rish tugmasi */}
+          {project.cameraUrl && (
+            <button onClick={()=>setCameraOpen(true)}
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white transition-all"
+              style={{ background:"#dc2626", boxShadow:"0 0 14px rgba(220,38,38,0.3)" }}
+              onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.background="#b91c1c";}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="#dc2626";}}>
+              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+              📹 Real ko&apos;rish
+            </button>
+          )}
         </div>
       </div>
 
@@ -901,6 +914,67 @@ export default function ObyektDetailPage() {
         </div>}{/* /grid + isHokim check */}
 
       </div>
+
+      {/* ── Camera Modal ── */}
+      {cameraOpen && project.cameraUrl && (
+        <div className="fixed inset-0 z-50 flex flex-col"
+          style={{ background:"rgba(0,0,0,0.92)", backdropFilter:"blur(6px)" }}>
+
+          {/* Modal header */}
+          <div className="flex items-center justify-between px-5 py-3 flex-shrink-0"
+            style={{ background:"rgba(0,0,0,0.6)", borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-white"
+                style={{ background:"#dc2626" }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                LIVE
+              </span>
+              <p className="text-sm font-bold text-white">{project.name}</p>
+              <p className="text-xs" style={{ color:"rgba(255,255,255,0.45)" }}>Real vaqt ko&apos;rinishi</p>
+            </div>
+            <button onClick={()=>setCameraOpen(false)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all"
+              style={{ background:"rgba(255,255,255,0.1)", color:"rgba(255,255,255,0.7)", border:"1px solid rgba(255,255,255,0.15)" }}
+              onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.18)";}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.1)";}}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Yopish
+            </button>
+          </div>
+
+          {/* Stream */}
+          <div className="flex-1 flex items-center justify-center p-4">
+            {(() => {
+              const url = project.cameraUrl!;
+              const isM3u8 = url.endsWith(".m3u8") || url.includes(".m3u8?");
+              const isMp4  = url.endsWith(".mp4")  || url.includes(".mp4?");
+              if (isM3u8 || isMp4) {
+                return (
+                  <video
+                    src={url}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="rounded-xl w-full"
+                    style={{ maxHeight:"calc(100vh - 120px)", background:"#000" }}
+                  />
+                );
+              }
+              return (
+                <iframe
+                  src={url}
+                  className="rounded-xl w-full"
+                  style={{ height:"calc(100vh - 120px)", border:"none", background:"#000" }}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                />
+              );
+            })()}
+          </div>
+        </div>
+      )}
 
       {/* Image Modal */}
       {modalImg && (
