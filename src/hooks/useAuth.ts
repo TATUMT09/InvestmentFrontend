@@ -27,6 +27,8 @@ export function useAuth() {
       tadbirkor:    "/user",
       user:         "/user",
       USER:         "/user",
+      DEV:          "/dev",
+      dev:          "/dev",
     };
     router.push(routes[currentUser.role] || "/login");
   };
